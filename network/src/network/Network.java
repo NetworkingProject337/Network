@@ -84,42 +84,45 @@ public class Network {
 
         byte[] bytes = new byte[addresslength + data.length()];
 
-        String address = relDestinationIp + realSourcePort + virtualIpAdress + virtualPort;
-
-        byte[] addressInBytes = address.getBytes();
-        byte[] messageInBytes = data.getBytes();
-
-        /* Converts the bit strings into bytes and adds them
-		 * to the byte array. */
-        for (int i = 0; i < addresslength; i++) {
-
-            bytes[i] = addressInBytes[i];
+        //Destination address inserting
+        bytes[0] = (byte) destinationId.charAt(0);
+        bytes[1] = (byte) destinationId.charAt(1);
+        bytes[2] = (byte) destinationPort.charAt(0);
+        bytes[3] = (byte) destinationPort.charAt(1);
+        bytes[4] = (byte) destinationPort.charAt(2);
+        bytes[5] = (byte) destinationPort.charAt(3);
+        bytes[6] = (byte) destinationPort.charAt(4);
+       
+        //Source destination 
+        bytes[7] = (byte) srcId.charAt(0);
+        bytes[8] = (byte) srcId.charAt(1);
+        bytes[9] = (byte) srcPort.charAt(0);
+        bytes[10] = (byte) srcPort.charAt(1);
+        bytes[11] = (byte) srcPort.charAt(2);
+        bytes[12] = (byte) srcPort.charAt(3);
+        bytes[13] = (byte) srcPort.charAt(4);
+        
+        
+        byte []dataBytes = data.getBytes();
+        for(int i = 14; i< dataBytes.length ; i++ ) {
+            bytes[i] = dataBytes[i-14];
         }
-
-        /* Adds the bytes of the message to the byte array. */
-        for (int i = addresslength; i < bytes.length; i++) {
-            bytes[i] = messageInBytes[i - addresslength];
-        }
-
+        
         return bytes;
     }
 
-    public String getIp(byte[] data, int start) {
-
-        String ip = "";
-
-        for (int i = 0; i < 4; i++) {
-            ip += "." + Integer.toString((int) (data[i + start] & 0xFF));
-        }
-
-        return ip.substring(1);
-
-    }
-
-    public String[] receiveMessage() {
+    public String receiveMessage(DatagramPacket packet) {
+        
+         byte[] revData = packet.getData();
+         
+         String data = "";
+         
+         for(int i = 14; i < revData.length ; i++ ){
+             data = data + (char) (revData[0] & 0xFF); 
+         }
 
         //To handle the recive of data
-        return null;
+        return data;
     }
 
 }
