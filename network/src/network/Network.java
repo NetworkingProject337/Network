@@ -67,8 +67,9 @@ public class Network {
 
         try {
             String reponseString = new String(data, "UTF-8").trim();
-            List<String> reponse = new ArrayList<String>(Arrays.asList(reponseString.split("#$")));
-            srcId = reponse.get(1);
+            String[] splitArray = reponseString.split("#\\$");
+            srcId = splitArray[1];
+            System.out.println("network.Network.regRespnseFromRouter() Source Id "+srcId);
             
         } catch (IOException ex) {
             System.err.println(ex);
@@ -80,9 +81,16 @@ public class Network {
 
     public byte[] BuildPacket(String data, String destinationId, String destinationPort) {
 
+        
+//        System.out.println("network.Network.BuildPacket()"+destinationId);
+//        System.out.println("network.Network.BuildPacket()"+destinationPort);
+//        System.out.println("network.Network.BuildPacket()"+srcId);
+//        System.out.println("network.Network.BuildPacket()"+srcPort);
         int addresslength = destinationId.length() + destinationPort.length() + srcId.length() + srcPort.length();
 
         byte[] bytes = new byte[addresslength + data.length()];
+        
+        System.out.println("network.Network.BuildPacket()"+bytes.length);
 
         //Destination address inserting
         bytes[0] = (byte) destinationId.charAt(0);
@@ -104,7 +112,8 @@ public class Network {
         
         
         byte []dataBytes = data.getBytes();
-        for(int i = 14; i< dataBytes.length ; i++ ) {
+        for(int i = 14; i-14< dataBytes.length ; i++ ) {
+            System.out.println("network.Network.BuildPacket()"+i + (i-14));
             bytes[i] = dataBytes[i-14];
         }
         
@@ -118,7 +127,7 @@ public class Network {
          String data = "";
          
          for(int i = 14; i < revData.length ; i++ ){
-             data = data + (char) (revData[0] & 0xFF); 
+             data = data + (char) (revData[i] & 0xFF); 
          }
 
         //To handle the recive of data
